@@ -1,0 +1,44 @@
+html {
+   overflow-y: scroll; 
+   height: 101%;
+}
+
+body {
+   min-width: 450px;
+}
+
+.img-download-track {
+   width: 16px;
+   cursor: pointer;
+}
+
+.radio24-top-logo {
+   width: 105px;
+}
+
+#options {
+   color: #FF0000;
+   text-align: center;
+}
+
+#download-songs-title {
+   cursor: pointer;
+   border-bottom: 1px solid #FF0000;
+   border-top: 1px solid #FF0000;
+   padding: 5px 0px;
+   font-weight: bold;
+   margin: 8px 0px;
+   text-align: center;
+}
+
+#total-downloads-container {
+   display: none;
+}
+
+#total-downloads-text {
+
+}
+
+#total-downloads {
+
+}
