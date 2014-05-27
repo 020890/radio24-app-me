@@ -1,5 +1,5 @@
 var totalDownloads = 0;
-var radioSiteLink = "http://radio24.ua";
+var radioSiteLink = "http://radio24.ua"; //
 var songsData = { // current songs list
     list: [],
     html: ''
