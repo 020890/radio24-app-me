@@ -1,0 +1,338 @@
+/*** PAGE ELEMENTS ***/
+
+html {
+    height: 100%;
+}
+
+body {
+    min-width: 450px;
+    border: 1px solid #FF0000;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 12px;
+    cursor: pointer;
+}
+
+/*** INDICATORS ELEMENTS ***/
+
+.playlist-player-download-track,
+.playlist-player-download-track-main {
+    width: 16px;
+    cursor: pointer;
+    position: relative;
+    top: 3px;
+}
+
+.popup-logo {
+    width: 105px;
+    position: relative;
+    top: 4px;
+}
+
+.popup-logo-container {
+    color: #FF0000;
+    text-align: center;
+}
+
+.playlist-player-download-songs-title {
+    cursor: pointer;
+    border-bottom: 1px solid #FF0000;
+    border-top: 1px solid #FF0000;
+    padding: 5px 0px;
+    font-weight: bold;
+    margin: 8px 0px;
+    text-align: center;
+}
+
+.playlist-player-total-downloads-container {
+    display: none;
+    color: #DF3A3A;
+}
+
+.playlist-player-total-downloads {
+    color: #000000;
+    font-family: Arial;
+    font-size: 14px;
+}
+
+.player-playlist-download-all-songs,
+.player-playlist-download-all-songs:hover,
+.player-playlist-download-all-songs:visited {
+    color: #DF3A3A;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.playlist-player-download-stop {
+    cursor: pointer;
+    margin-right: 8px;
+    width: 16px;
+    position: relative;
+    top: 2px;
+}
+
+.playlist-player-total-tacks,
+.playlist-player-last-update {
+    position: absolute;
+    bottom: 12px;
+    color: #000000;
+    font-size: 12px;
+    display: none;
+}
+
+.playlist-player-total-tacks {
+    left: 52px;
+    cursor: help;
+}
+
+.playlist-player-last-update {
+    right: 24px;
+    cursor: help;
+}
+
+.email-me {
+    position: absolute;
+    bottom: 13px;
+    left: 23px;
+    opacity: 0.15;
+    width: 16px;
+}
+
+.email-me:hover {
+    opacity: 1;
+}
+
+/*** PLAYLIST ELEMENTS ***/
+
+.playlist-player-playlist-content {
+    position: relative;
+}
+
+.playlist-player-playlist {
+    max-height: 463px;
+    margin-bottom: 25px;
+    display: none;
+}
+
+.playlist-player-track-item {
+    margin: 0px 0px 0px 7px;
+    padding: 6px 8px 8px 8px;
+    border-radius: 15px;
+    font-family: Helvetica;
+    font-size: 13px;
+    padding-left: 0px 7px;
+}
+
+.playlist-player-song-search {
+    float: right;
+}
+
+.playlist-player-song-search img {
+    width: 16px;
+    cursor: pointer;
+}
+
+.playlist-player-song-search-vk {
+    margin-right: 10px;
+}
+
+.playlist-player-track-item a {
+    color: #DF3A3A;
+    text-decoration: none;
+
+    max-height: 17px;
+    max-width: 300px;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    top: 3px;
+}
+
+.playlist-player-track-item a:hover {
+    color: #DF3A3A;
+    text-decoration: underline;
+}
+
+.playlist-player-track-item a:visited {
+    color: #777676;
+    text-decoration: none;
+}
+
+.playlist-player-track-item-number {
+    display: inline-block;
+    min-width: 43px;
+}
+
+.playlist-player-track-item-current {
+    background-color: #ECECEC;
+}
+
+/*** PLAYER ELEMENTS ***/
+
+.online-player-control {
+    position: absolute;
+    top: 17px;
+    left: 30px;
+}
+
+.online-player-control img {
+    width: 35px;
+    cursor: pointer;
+    display: none;
+}
+
+#online-player-text {
+    position: absolute;
+    top: 16px;
+    left: 40px;
+    color: #DF3A3A;
+}
+
+.online-player-volume-toggle {
+    position: absolute;
+    top: 24px;
+    right: 133px;
+}
+
+.online-player-volume-toggle img {
+    width: 9px;
+    height: 14px;
+    cursor: pointer;
+    display: none;
+}
+
+.online-player-volume-slider {
+    position: absolute;
+    top: 29px;
+    right: 40px;
+    cursor: pointer;
+}
+
+.online-player-volume-slider-progress {
+    width: 80px;
+    height: 5px;
+}
+
+.playlist-player-position-slider {
+    position: absolute;
+    top: 45px;
+    right: 39px;
+    cursor: pointer;
+    display: none;
+}
+
+.playlist-player-position-slider-progress {
+    width: 80px;
+    height: 5px;
+}
+
+.playlist-player-sync-songs-control {
+    position: absolute;
+    bottom: -24px;
+    right: 160px;
+}
+
+.playlist-player-sync-songs-control img {
+    width: 12px;
+    cursor: pointer;
+    opacity: 0.15;
+}
+
+.playlist-player-sync-songs-control img:hover {
+    opacity: 1;
+}
+
+.playlist-player-song-play-button,
+.playlist-player-song-pause-button {
+    width: 15px;
+    position: relative;
+    top: 2px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.playlist-player-song-pause-button {
+    display: none;
+}
+
+.playlist-player-replay {
+    position: absolute;
+    top: 39px;
+    right: 128px;
+    cursor: pointer;
+    display: none;
+    width: 18px;
+}
+
+.playlist-player-top-control-container {
+    position: absolute;
+    top: 40px;
+    right: 19px;
+    display: none;
+}
+
+.playlist-player-top-control-container img {
+    width: 14px;
+    cursor: pointer;
+    display: none;
+}
+
+.playlist-player-top-control-container #playlist-player-play-top {
+    width: 19px;
+    position: relative;
+    top: -2px;
+    left: 1px;
+}
+
+.playlist-player-prev,
+.playlist-player-next {
+    width: 16px;
+    cursor: pointer;
+    position: relative;
+    top: 3px;
+    opacity: 0.15;
+    display: none;
+}
+
+.playlist-player-prev:hover,
+.playlist-player-next:hover {
+    opacity: 1;
+}
+
+.playlist-player-prev {
+    float: left;
+    left: 15px;
+}
+
+.playlist-player-next {
+    float: right;
+    right: 15px;
+}
+
+/*** SLIDERS ***/
+
+.ui-slider-handle {
+    display: none;
+}
+
+.ui-slider-range {
+    background: #DF3A3A !important;
+}
+
+/*** SCROLL ***/
+
+.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+    background-color: #DF3A3A !important;
+}
+
+.mCSB_inside > .mCSB_container {
+    margin-right: 18px;
+}
+
+

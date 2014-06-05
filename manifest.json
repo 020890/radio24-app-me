@@ -1,35 +1,54 @@
 {
+    // Required
     "manifest_version" : 2,
+    "name"             : "Radio24 Live",
+    "version"          : "1.2",
 
-    "name"             : "Radio 24 Downloader",
-
-    "version"          : "1.1",
-
-    "icons"           : {
-        "128" : "images/img.png"
+    // Recommended
+    "description"      : "Рсширение позволяет слушать онлайн радио http://radio24.ua либо последних 40 песен проигранных на радио. Пользователь имеет возможность скачать песни на свой компьютер и прослушать их на любом устройстве. Поиск песни которая понравилась на YouTube, Vkontakte, LastFM.",
+    "icons"            : {
+        "16" : "images/icon/icon_19.png",
+        "48" : "images/icon/icon_48.png",
+        "128" : "images/icon/icon_128.png"
     },
 
-    "content_scripts" : [
-        {
-            "matches" : [ "*://*/*" ],
-            "js"      : [ "content.js" ]
-        }
-    ],
+    // Pick one (or none)
+    "browser_action" : {
+        "default_title" : "Radio24 Live",
+        "default_icon"  : "images/icon/icon_48.png",
+        "default_popup" : "popup.html"
+    },
 
+    // Optional
+    "author": "Alexandr Lisunov",
     "background"      : {
-        "scripts" : ["background.js"]
+        "page": "background.html",
+        "persistent": false
     },
+    "homepage_url": "http://radio24.ua",
+    "incognito": "spanning",
+    //"key": "publicCrxKey",
+    "offline_enabled": true,
+    //"options_page": "option.html",
 
     "permissions"     : [
         "http://radio24.ua/*",
+        "http://icecast.luxnet.ua/*",
+        "http://vk.com/*",
+        "http://www.lastfm.ru/*",
+        "http://www.youtube.com/*",
         "downloads",
         "tabs"
     ],
 
-    "browser_action" : {
-        "default_title" : "Radio 24 Downloader",
-        "default_icon"  : "images/img.png",
-        "default_popup" : "popup.html"
-    }
+    "short_name": "Radio24 Live",
+
+    "content_scripts" : [
+        {
+            "matches" : [ "*://*/*" ],
+            "js"      : ["js/content.js"],
+            "css"     : []
+        }
+    ]
 
 }
