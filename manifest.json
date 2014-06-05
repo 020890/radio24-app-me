@@ -1,35 +1,29 @@
 {
-    // Required
     "manifest_version" : 2,
     "name"             : "Radio24 Live",
-    "version"          : "1.2",
+    "version"          : "1.2.1",
 
-    // Recommended
-    "description"      : "Рсширение позволяет слушать онлайн радио http://radio24.ua либо последних 40 песен проигранных на радио. Пользователь имеет возможность скачать песни на свой компьютер и прослушать их на любом устройстве. Поиск песни которая понравилась на YouTube, Vkontakte, LastFM.",
+    "description"      : "Слушайте радио http://radio24.ua либо плейлист последних песен. Возможность скачать песни, поиск в YouTube,VK,LastFM.",
     "icons"            : {
         "16" : "images/icon/icon_19.png",
         "48" : "images/icon/icon_48.png",
         "128" : "images/icon/icon_128.png"
     },
 
-    // Pick one (or none)
     "browser_action" : {
         "default_title" : "Radio24 Live",
         "default_icon"  : "images/icon/icon_48.png",
         "default_popup" : "popup.html"
     },
 
-    // Optional
     "author": "Alexandr Lisunov",
     "background"      : {
         "page": "background.html",
-        "persistent": false
+        "persistent": true
     },
     "homepage_url": "http://radio24.ua",
     "incognito": "spanning",
-    //"key": "publicCrxKey",
     "offline_enabled": true,
-    //"options_page": "option.html",
 
     "permissions"     : [
         "http://radio24.ua/*",
@@ -41,14 +35,13 @@
         "tabs"
     ],
 
-    "short_name": "Radio24 Live",
-
     "content_scripts" : [
         {
             "matches" : [ "*://*/*" ],
             "js"      : ["js/content.js"],
             "css"     : []
         }
-    ]
+    ],
 
+    "short_name": "Radio24 Live"
 }
