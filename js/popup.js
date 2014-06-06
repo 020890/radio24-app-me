@@ -27,7 +27,13 @@ window.onload = function () {
     // logo link to main site
     $ ( document ).on ( 'click', '#popup-logo', function ( event ) {
         event.preventDefault ();
-        bgPage.openLinkInCurrentTab ( bgPage.radioSiteLink );
+        bgPage.openLinkInNewTab ( bgPage.radioSiteLink );
+    } );
+
+    // email me link
+    $ ( document ).on ( 'click', '#email-me', function ( event ) {
+        event.preventDefault ();
+        bgPage.openLinkInNewTab ( bgPage.emailMeLink );
     } );
 
     // online player play button click

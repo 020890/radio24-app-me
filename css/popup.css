@@ -48,6 +48,7 @@ body {
     font-weight: bold;
     margin: 8px 0px;
     text-align: center;
+    position: relative;
 }
 
 .playlist-player-total-downloads-container {
@@ -102,6 +103,7 @@ body {
     left: 23px;
     opacity: 0.15;
     width: 16px;
+    cursor: pointer;
 }
 
 .email-me:hover {
@@ -306,13 +308,15 @@ body {
 }
 
 .playlist-player-prev {
-    float: left;
     left: 15px;
+    position: absolute;
+    top: 8px;
 }
 
 .playlist-player-next {
-    float: right;
     right: 15px;
+    position: absolute;
+    top: 8px;
 }
 
 /*** SLIDERS ***/

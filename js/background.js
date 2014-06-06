@@ -4,6 +4,7 @@ var popupPageAvaliable = false;
 var popupElements = {}; // popup.html elements
 var totalDownloads = 0; // total download count
 var radioSiteLink = "http://radio24.ua/";
+var emailMeLink = "https://chrome.google.com/webstore/support/chmaodglbkpofamhgeeglifgddgbldif?hl=uk&gl=UA#question";
 var songsData = { // current songs list
     list   : [], // songs list
     html   : '', // songs list html
