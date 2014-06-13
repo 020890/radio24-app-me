@@ -16,6 +16,8 @@ var chromeCurrentDownloadId = 0;
 var downloadIndex = 0; // current download song index in query
 var updateLiveTime = 1000 * 3600 * 2; // songs list live time in local storage
 var contentAjaxTimeOut = 2000;
+var playlistMaxSongsCount = 220;
+var playlistAddSongsCount = 30;
 
 
 /*** Custom chrome application functions ***/
@@ -52,7 +54,7 @@ function openLinkInNewTab ( url ) {
 // check download process
 chrome.downloads.onChanged.addListener ( function ( downloadDelta ) {
     if ( downloadDelta.state ) {
-        if ( downloadDelta.state.current == "complete" ) {
+        if ( downloadDelta.state.current == "complete" && downloadInProgress ) {
             totalDownloads--;
             if(popupPageAvaliable) {
                 popupElements.totalDownloadsItem.text ( totalDownloads );
@@ -73,9 +75,15 @@ chrome.downloads.onChanged.addListener ( function ( downloadDelta ) {
 } );
 
 // add to chrome download query
-function chromeDownloadQueryAdd ( index ) {
-    if ( songsData.list.length && songsData.list[index] ) {
-        downloadQueryList.push ( songsData.list[index].url );
+function chromeDownloadQueryAdd ( index, usePlayPlaylist ) {
+    if(usePlayPlaylist) {
+        if ( songsPlayData.list.length && songsPlayData.list[index] ) {
+            downloadQueryList.push ( songsPlayData.list[index].url );
+        }
+    } else {
+        if ( songsData.list.length && songsData.list[index] ) {
+            downloadQueryList.push ( songsData.list[index].url );
+        }
     }
 
     if ( !downloadInProgress ) {
@@ -141,13 +149,36 @@ function toggleSongsUpdateTime ( showTime ) {
         popupElements.lastUpdateContainerItem.hide ( 0 );
         popupElements.syncSongsControl.hide ( 0 );
         popupElements.emailMe.hide ( 0 );
+        togglePlaylistPlayerAddSongs(false, false);
     }
 }
 
 // render songs list counter
 function updateSongsListCounter ( value ) {
+    if(value >= playlistMaxSongsCount) {
+        togglePlaylistPlayerAddSongs(false, false);
+    } else {
+        togglePlaylistPlayerAddSongs(true, true);
+    }
     popupElements.songsCounterItem.text ( value );
     toggleSongsCounter ( true );
+}
+
+// toggle playlist add songs buttons html
+function togglePlaylistPlayerAddSongs ( showButton, animate ) {
+    if(animate) {
+        if ( showButton ) {
+            popupElements.playlistPlayerAddSongs.fadeIn(400);
+        } else {
+            popupElements.playlistPlayerAddSongs.fadeOut(400);
+        }
+    } else {
+        if ( showButton ) {
+            popupElements.playlistPlayerAddSongs.show(0);
+        } else {
+            popupElements.playlistPlayerAddSongs.hide(0);
+        }
+    }
 }
 
 // update total downloads
@@ -182,9 +213,10 @@ function getCurrentDateTime ( timestamp ) {
 /*** Songs list local storage ***/
 
 // add songs list to storage
-function saveDataToStorage () {
-    if ( localStorage.songsData = JSON.stringify ( songsData.list ) ) {
-        localStorage.songsDataUpdate = songsData.update.toString ();
+function saveDataToStorage (saveSongsPlayData) {
+    var songsSource = saveSongsPlayData ? songsPlayData : songsData;
+    if ( localStorage.songsData = JSON.stringify ( songsSource.list ) ) {
+        localStorage.songsDataUpdate = songsSource.update.toString ();
     }
 }
 
@@ -237,26 +269,71 @@ function toggleOnlinePlayerButtonState ( showPlayButton ) {
     }
 }
 
+// display playlist player current song info
+function changePlayerPlaylistCurrentSong(index, animate) {
+    var songInfo = songsPlayData.list[index];
+    if(popupPageAvaliable) {
+        if(animate) {
+            popupElements.playlistPlayerCurrentSongDownload.fadeOut(100);
+            popupElements.playlistPlayerCurrentSongName.slideUp(300, function() {
+                setPlayerPlaylistCurrentSongData(songInfo, index);
+                popupElements.playlistPlayerCurrentSongName.slideDown(300, function() {
+                    popupElements.playlistPlayerCurrentSongDownload.fadeIn(100);
+                });
+            });
+        } else {
+            popupElements.playlistPlayerCurrentSongDownload.hide(0);
+            popupElements.playlistPlayerCurrentSongName.hide(0, function() {
+                setPlayerPlaylistCurrentSongData(songInfo, index);
+                popupElements.playlistPlayerCurrentSongName.show(0, function() {
+                    popupElements.playlistPlayerCurrentSongDownload.show(0);
+                });
+            });
+        }
+    }
+}
+
+// ste playlist player current song data: name, search index, donwload url
+function setPlayerPlaylistCurrentSongData (songInfo, index) {
+    if(songInfo) {
+        popupElements.playlistPlayerCurrentSongName.text(songInfo.name);
+        popupElements.playlistPlayerCurrentSongDownload.attr('song-url', songInfo.url);
+        popupElements.playlistPlayerCurrentSongDownload.attr('song-name', songInfo.name);
+        popupElements.playlistPlayerCurrentSongDownload.attr('song-index', index);
+        popupElements.playlistPlayerCurrentSongName.attr('data-seach-index', index);
+        popupElements.playlistPlayerCurrentSongSearchVk.attr('data-seach-index', index);
+        popupElements.playlistPlayerCurrentSongSearchLfm.attr('data-seach-index', index);
+    }
+}
+
 /*** Playlist player functions ***/
 
 // play playlist song
-function playlistPlayerPlay ( songIndex ) {
+function playlistPlayerPlay ( songIndex, manualSongsListClick ) {
     var playNewPlaylist = false;
+
     if ( songsData.update != songsPlayData.update ) {
+        if(parseInt(songsPlayData.update)) {
+            if(!manualSongsListClick) {
+                songIndex = 0;
+            }
+        }
+        playNewPlaylist = true;
         // update playlist play songs
         songsPlayData.list = songsData.list;
         songsPlayData.update = songsData.update;
-        playNewPlaylist = true;
-        songIndex = 0;
     }
 
     var songInfo = songsPlayData.list[songIndex];
     if ( (currentPlaylistPlayIndex != songIndex) || playNewPlaylist ) {
         playlistPlayerInstance.src = songInfo.url;
         currentPlaylistPlayIndex = songIndex;
+        changePlayerPlaylistCurrentSong(currentPlaylistPlayIndex, true);
     }
     currentPlaySongIndex = songIndex;
     playPlayer ( playlistPlayerInstance );
+
+    return currentPlaySongIndex;
 }
 
 function onPopupCloseHandler () {

@@ -4,6 +4,7 @@ var songsPlayData = { // current playlist songs
     list   : [], // songs list
     update : 0 // songs last update
 };
+var displayPlaylistPlayer = false;
 
 var defaultAppIcon = 'images/icon/icon_48.png';
 var currentAppIcon = defaultAppIcon;
@@ -110,7 +111,7 @@ var onlinePlayerInstance = null;
 
 // online player error handler popup
 function onlinePlayerErrorBackground() {
-    onlinePlayerInstance.pause ();
+    pausePlayer(onlinePlayerInstance);
 }
 
 /*** Playlist player ***/
@@ -147,7 +148,7 @@ function setPlaylistPlayerEndBackground () {
 
 // online player error handler popup
 function playlistPlayerErrorBackground() {
-    playlistPlayerInstance.pause ();
+    pausePlayer (playlistPlayerInstance);
 }
 
 /*** Init players ***/
@@ -157,10 +158,12 @@ $ ( function () {
     onlinePlayerInstance = getPlayer ( onlinePlayerId );
     // init online player connection problem
     onlinePlayerInstance.onerror = onlinePlayerErrorBackground;
+    onlinePlayerInstance.onstalled = onlinePlayerErrorBackground;
     //init playlist player
     playlistPlayerInstance = getPlayer ( playlistPlayerId );
     // init playlist player connection problem
     playlistPlayerInstance.onerror = playlistPlayerErrorBackground;
+    playlistPlayerInstance.onstalled = playlistPlayerErrorBackground;
     // init common player
     initPlayerVolume ();
     // set playlist player song end

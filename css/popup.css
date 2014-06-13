@@ -38,17 +38,34 @@ body {
 .popup-logo-container {
     color: #FF0000;
     text-align: center;
+    border-bottom: 1px solid #FF0000;
+    padding-bottom: 8px;
+}
+
+.playlist-player-current-song-container {
+    cursor: pointer;
+    border-bottom: 1px solid #FF0000;
+    font-weight: bold;
+    margin-top: 3px;
+    text-align: center;
+    height: 32px;
+    position: relative;
+    display: none;
 }
 
 .playlist-player-download-songs-title {
     cursor: pointer;
-    border-bottom: 1px solid #FF0000;
-    border-top: 1px solid #FF0000;
-    padding: 5px 0px;
     font-weight: bold;
-    margin: 8px 0px;
     text-align: center;
-    position: relative;
+    width: 135px;
+    font-size: 12px;
+    position: absolute;
+    top: 41px;
+    right: 13px;
+}
+
+.playlist-player-download-songs-title .playlist-player-download-track-main{
+    width: 13px;
 }
 
 .playlist-player-total-downloads-container {
@@ -58,8 +75,6 @@ body {
 
 .playlist-player-total-downloads {
     color: #000000;
-    font-family: Arial;
-    font-size: 14px;
 }
 
 .player-playlist-download-all-songs,
@@ -72,8 +87,8 @@ body {
 
 .playlist-player-download-stop {
     cursor: pointer;
-    margin-right: 8px;
-    width: 16px;
+    margin-right: 1px;
+    width: 12px;
     position: relative;
     top: 2px;
 }
@@ -93,8 +108,22 @@ body {
 }
 
 .playlist-player-last-update {
-    right: 24px;
+    right: 45px;
     cursor: help;
+}
+
+.playlist-player-add-songs {
+    position: absolute;
+    bottom: 13px;
+    left: 230px;
+    opacity: 0.15;
+    width: 14px;
+    cursor: pointer;
+    display: none;
+}
+
+.playlist-player-add-songs:hover {
+    opacity: 1;
 }
 
 .email-me {
@@ -114,12 +143,72 @@ body {
 
 .playlist-player-playlist-content {
     position: relative;
+    padding-top: 6px;
 }
 
 .playlist-player-playlist {
-    max-height: 463px;
+    max-height: 460px;
     margin-bottom: 25px;
     display: none;
+}
+
+.playlist-player-current-song-item {
+    border-radius: 15px;
+    font-family: Helvetica;
+    font-size: 11px;
+    padding-left: 0px 7px;
+}
+
+.playlist-player-current-song-item .playlist-player-song-search-left {
+    position: absolute;
+    top: 8px;
+    left: 43px;
+}
+
+.playlist-player-current-song-item .playlist-player-song-search-right {
+    position: absolute;
+    top: 9px;
+    right: 31px;
+}
+
+.playlist-player-current-song-item a {
+    color: #DF3A3A;
+    text-decoration: none;
+
+    max-height: 17px;
+    max-width: 245px;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    top: 3px;
+}
+
+.playlist-player-current-song-item a:hover {
+    color: #DF3A3A;
+    text-decoration: underline;
+}
+
+.playlist-player-current-song-item a:visited {
+    color: #777676;
+    text-decoration: none;
+}
+
+.playlist-player-current-song-item .playlist-player-song-search {
+    position: relative;
+    top: 6px;
+    right: 25px;
+}
+
+.playlist-player-current-song-item .playlist-player-track-item-number {
+    min-width: 13px;
+    margin-right: 5px;
+    margin-left: 3px;
+}
+
+.playlist-player-current-song-item .playlist-player-download-track {
+    width: 13px;
+    position: absolute;
+    top: 3px;
 }
 
 .playlist-player-track-item {
@@ -133,6 +222,8 @@ body {
 
 .playlist-player-song-search {
     float: right;
+    position: relative;
+    top: 2px;
 }
 
 .playlist-player-song-search img {
@@ -149,7 +240,7 @@ body {
     text-decoration: none;
 
     max-height: 17px;
-    max-width: 300px;
+    max-width: 290px;
     display: inline-block;
     overflow: hidden;
     position: relative;
@@ -223,21 +314,21 @@ body {
 
 .playlist-player-position-slider {
     position: absolute;
-    top: 45px;
-    right: 39px;
+    bottom: 7px;
+    left: 71px;
     cursor: pointer;
     display: none;
 }
 
 .playlist-player-position-slider-progress {
-    width: 80px;
-    height: 5px;
+    width: 307px;
+    height: 4px;
 }
 
 .playlist-player-sync-songs-control {
     position: absolute;
     bottom: -24px;
-    right: 160px;
+    right: 12px;
 }
 
 .playlist-player-sync-songs-control img {
@@ -265,31 +356,24 @@ body {
 
 .playlist-player-replay {
     position: absolute;
-    top: 39px;
-    right: 128px;
+    top: 3px;
+    right: 74px;
     cursor: pointer;
     display: none;
-    width: 18px;
+    width: 15px;
 }
 
 .playlist-player-top-control-container {
-    position: absolute;
-    top: 40px;
-    right: 19px;
     display: none;
 }
 
 .playlist-player-top-control-container img {
-    width: 14px;
+    width: 13px;
     cursor: pointer;
-    display: none;
-}
-
-.playlist-player-top-control-container #playlist-player-play-top {
-    width: 19px;
-    position: relative;
-    top: -2px;
-    left: 1px;
+    position: absolute;
+    top: 3px;
+    left: 75px;
+    /*display: none;*/
 }
 
 .playlist-player-prev,

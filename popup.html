@@ -37,37 +37,56 @@
             <div id="online-player-volume-slider-progress" class="online-player-volume-slider-progress"></div>
         </div>
 
-        <img src="images/playlist-player-replay.png" id="playlist-player-replay" class="playlist-player-replay" title="C начала" alt="C начала"/>
-        <div class="playlist-player-position-slider">
-            <div id="playlist-player-position-slider-progress" class="playlist-player-position-slider-progress"></div>
-        </div>
-        <div class="playlist-player-top-control-container">
-            <img src="images/playlist-player-play.png" id="playlist-player-play-top" class="playlist-player-play-top" title="Слушать трек" alt="Слушать трек"/>
-            <img src="images/playlist-player-pause.png" id="playlist-player-pause-top" class="playlist-player-pause-top" title="Оставновить трек" alt="Оставновить трек"/>
-        </div>
-
         <div class="popup-logo-container">
             <a href="#" traget="_blank"><img src="images/popup-logo.png" id="popup-logo" class="popup-logo" title="Перейти на сайт radio24.ua" alt="Перейти на сайт radio24.ua"></a>
+        </div>
+
+        <!-- Playlist current song element -->
+
+        <div class="playlist-player-current-song-container">
+
+            <img src="images/playlist-player-prev.png" id="playlist-player-prev" class="playlist-player-prev" title="Предыдущий трек" alt="Предыдущий трек"/>
+
+            <div class="playlist-player-current-song-item">
+                <div class="playlist-player-song-search-left">
+                    <img src="images/search-lastfm.png" data-seach-type="2" data-seach-current="1" data-seach-index="" class="playlist-player-song-search-lastfm" title="Найти LastFM" alt="Найти LastFM">
+                </div>
+
+                <span class="playlist-player-track-item-number">
+                    <img song-index="" song-name="" song-url="" data-download-current="1" class="playlist-player-download-track" src="images/icon_16.png" title="Скачать трек">
+                </span>
+                <a href="#" class="playlist-player-song-search-youtube" data-seach-type="0" data-seach-current="1" data-seach-index="" target="_blank"></a>
+
+                <div class="playlist-player-song-search-right">
+                    <img src="images/search-vk.png" data-seach-type="1" data-seach-current="1" data-seach-index="" class="playlist-player-song-search-vk" title="Найти Вконтакте" alt="Найти Вконтакте">
+                </div>
+            </div>
+
+            <img src="images/playlist-player-replay.png" id="playlist-player-replay" class="playlist-player-replay" title="C начала" alt="C начала"/>
+            <div class="playlist-player-position-slider">
+                <div id="playlist-player-position-slider-progress" class="playlist-player-position-slider-progress"></div>
+            </div>
+            <div class="playlist-player-top-control-container">
+                <img src="images/playlist-play.png" id="playlist-player-play-top" class="playlist-player-play-top" title="Слушать трек" alt="Слушать трек"/>
+                <img src="images/playlist-pause.png" id="playlist-player-pause-top" class="playlist-player-pause-top" title="Оставновить трек" alt="Оставновить трек"/>
+            </div>
+
+            <img src="images/playlist-player-next.png" id="playlist-player-next" class="playlist-player-next" title="Следующий трек" alt="Следующий трек"/>
+
         </div>
 
         <!-- Download all Elements -->
 
         <div class="playlist-player-download-songs-title">
-            <img src="images/playlist-player-prev.png" id="playlist-player-prev" class="playlist-player-prev" title="Предыдущий трек" alt="Предыдущий трек"/>
 
-            <a href="#" id="player-playlist-download-all-songs" class="player-playlist-download-all-songs">
-                <img class="playlist-player-download-track-main" src="images/icon_16.png" title="Скачать все треки">
-                Скачать все треки
-                <img class="playlist-player-download-track-main" src="images/icon_16.png" title="Скачать все треки">
-            </a>
+            <a href="#" id="player-playlist-download-all-songs" class="player-playlist-download-all-songs" title="Скачать все треки">Скачать треки</a>
 
             <div class="playlist-player-total-downloads-container">
                 <img src="images/playlist-player-download-stop.png" id="playlist-player-download-stop" class="playlist-player-download-stop" title="Отменить скачивание" alt="Отменить скачивание">
-                <span>Осталось скачать треков: </span>
+                <span>Осталось: </span>
                 <span id="playlist-player-total-downloads" class="playlist-player-total-downloads">0<span/>
             </div>
 
-            <img src="images/playlist-player-next.png" id="playlist-player-next" class="playlist-player-next" title="Следующий трек" alt="Следующий трек"/>
         </div>
 
         <!-- Playlist Elements -->
@@ -84,8 +103,9 @@
         <!-- Footer Elements -->
 
         <div class="playlist-player-total-tacks" title="Треков в плейлисте">Всего треков в списке: <span id="playlist-player-total-tacks-count" class="playlist-player-total-tacks-count"><span/></div>
-        <div class="playlist-player-last-update" title="Автообновление каждые 2ч.">Обновлено: <span id="playlist-player-last-update-time" class="playlist-player-last-update-time"><span/></div>
+        <div class="playlist-player-last-update" title="">Обновлено: <span id="playlist-player-last-update-time" class="playlist-player-last-update-time"><span/></div>
         <img src="images/email-me.png" id="email-me" class="email-me" title="Написать разработчику: lisunovalexandr@gmail.com" alt="lisunovalexandr@gmail.com"/>
+        <img src="images/playlist-player-add-songs.png" id="playlist-player-add-songs" class="playlist-player-add-songs" title="Добавить треков в плейлист" alt="Добавить треков в плейлист"/>
 
         <!-- JS -->
         <script src="js/popup.js" type="text/javascript"></script>

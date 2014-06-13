@@ -6,10 +6,11 @@ window.onload = function () {
         // player playlist download song link
     $ ( document ).on ( 'click', '.playlist-player-download-track', function ( event ) {
         event.preventDefault ();
-        var index = $ ( this ).attr ( 'song-index' );
+        var index = parseInt($ ( this ).attr ( 'song-index' ));
+        var usePlayPlaylist = parseInt($ ( this ).attr ( 'data-download-current' )) ? true : false;
         if ( index ) {
             bgPage.updateTotalDownloads ( (++bgPage.totalDownloads) );
-            bgPage.chromeDownloadQueryAdd ( index ); // add song to download query
+            bgPage.chromeDownloadQueryAdd ( index, usePlayPlaylist ); // add song to download query
         }
     } );
 
@@ -19,7 +20,7 @@ window.onload = function () {
         if ( bgPage.songsData.list.length ) {
             bgPage.updateTotalDownloads ( (bgPage.totalDownloads += bgPage.songsData.list.length) );
             $.each ( bgPage.songsData.list, function ( index, value ) { // add songs to download query
-                bgPage.chromeDownloadQueryAdd ( index );
+                bgPage.chromeDownloadQueryAdd ( index, false );
             } );
         }
     } );
@@ -41,10 +42,8 @@ window.onload = function () {
         event.preventDefault ();
         bgPage.popupElements.onlinePlayerPlay.hide ( 0 );
         bgPage.popupElements.onlinePlayerPause.show ( 0 );
-        bgPage.popupElements.playlistPlayerPositionSlider.hide ( 0 );
-        bgPage.popupElements.playlistPlayerReplay.hide ( 0 );
-        bgPage.popupElements.playlistPlayerTopControl.hide ( 0 );
-        togglePlaylistPlayerNextPrev(false);
+
+        toggleCurrentSongPlay(false);
 
         // off playlist player
         togglePlaylistPlayerPlay ( true, -1 );
@@ -79,6 +78,55 @@ window.onload = function () {
         bgPage.popupElements.onlinePlayerVolumeSliderProgress.slider ( 'value', bgPage.lastSetOnValue * 100 );
     } );
 
+    // playlist player add songs
+    $ ( document ).on ( 'click', '#playlist-player-add-songs', function ( event ) {
+        event.preventDefault ();
+        if(bgPage.songsData.list.length < bgPage.playlistMaxSongsCount) {
+            var startTrackIndex = bgPage.songsData.list.length;
+            var addSongsCount = bgPage.playlistAddSongsCount;
+            var radioSiteAddSongsLink = bgPage.radioSiteLink + "loadMoreSongs.ajx?playlistType=RECOMMENDED&startRowAudio=" + (parseInt(startTrackIndex) + 2) + "&maxRowsAudio=" + addSongsCount + "&aaxmlrequest=true&aazones=playerLoadMoreZone";
+            bgPage.togglePlaylistPlayerAddSongs(false, true);
+            $.get ( radioSiteAddSongsLink, function ( data ) { // get additional playlist data
+                var addSongsData = parseSiteTrackList ( data, bgPage.songsData.update, startTrackIndex );
+                var songsContainer = bgPage.popupElements.resultItem;
+                var songsList = bgPage.popupElements.resultList;
+                var playlistPlayerPlaying = bgPage.isPlayerPlaying(bgPage.playlistPlayerInstance);
+                    $.each(addSongsData.list, function( index, value ) {
+                        if(bgPage.songsData.update == bgPage.songsPlayData.update) {
+                            if(playlistPlayerPlaying) {
+                                bgPage.songsPlayData.list.push(value);
+                            } else {
+                                bgPage.songsData.list.push(value);
+                            }
+                        } else {
+                            bgPage.songsData.list.push(value);
+                        }
+                    });
+
+                    songsList.append(addSongsData.html);
+                    songsContainer.mCustomScrollbar ( "update" );
+                    if(bgPage.songsData.update == bgPage.songsPlayData.update) {
+                        if(playlistPlayerPlaying) {
+                            bgPage.songsPlayData.html += addSongsData.html;
+                            bgPage.updateSongsListCounter ( bgPage.songsPlayData.list.length );
+                            bgPage.saveDataToStorage (true);
+                        } else {
+                            bgPage.songsData.html += addSongsData.html;
+                            bgPage.updateSongsListCounter ( bgPage.songsData.list.length );
+                            bgPage.saveDataToStorage ();
+                        }
+                    } else {
+                        bgPage.songsData.html += addSongsData.html;
+                        bgPage.updateSongsListCounter ( bgPage.songsData.list.length );
+                        bgPage.saveDataToStorage ();
+                    }
+
+                    bgPage.updateLiveTime += (1000 * 3600 * 2); // next update time + 2 hours
+                    bgPage.popupElements.lastUpdateContainerItem.attr('title', 'Автообновление каждые ' + parseInt(bgPage.updateLiveTime / 3600 / 1000) + 'ч.');
+            }, 'html' );
+        }
+    } );
+
     // online player playlist sync on button click
     $ ( document ).on ( 'click', '#playlist-player-sync-songs-on', function ( event ) {
         event.preventDefault ();
@@ -91,9 +139,9 @@ window.onload = function () {
         event.preventDefault ();
         var songIndex = $ ( this ).attr ( 'song-id' );
         togglePlaylistPlayerPlay ( false, songIndex );
-        togglePlaylistPlayerNextPrev(true);
+        //togglePlaylistPlayerNextPrev(true);
         offOnlinePlayer ();
-        bgPage.playlistPlayerPlay ( songIndex );
+        bgPage.playlistPlayerPlay ( songIndex, true );
     } );
 
     // online player playlist pause item on button click
@@ -104,7 +152,7 @@ window.onload = function () {
             bgPage.pausePlayer ( bgPage.playlistPlayerInstance );
         }
         togglePlaylistPlayerPlay ( true, songIndex );
-        togglePlaylistPlayerNextPrev(false);
+        //togglePlaylistPlayerNextPrev(false);
     } );
 
     // popup close on button click
@@ -141,10 +189,10 @@ window.onload = function () {
     $ ( document ).on ( 'click', '#playlist-player-play-top', function ( event ) {
         event.preventDefault ();
         var songIndex = bgPage.currentPlaySongIndex;
+            songIndex = bgPage.playlistPlayerPlay ( songIndex );
         togglePlaylistPlayerPlay ( false, songIndex );
-        togglePlaylistPlayerNextPrev(true);
+        //togglePlaylistPlayerNextPrev(true);
         offOnlinePlayer ();
-        bgPage.playlistPlayerPlay ( songIndex );
     } );
 
     // online player playlist pause top on button click
@@ -155,7 +203,7 @@ window.onload = function () {
             bgPage.pausePlayer ( bgPage.playlistPlayerInstance );
         }
         togglePlaylistPlayerPlay ( true, songIndex );
-        togglePlaylistPlayerNextPrev(false);
+        //togglePlaylistPlayerNextPrev(false);
     } );
 
     $( document ).on('click', '.playlist-player-song-search-vk, ' +
@@ -164,7 +212,13 @@ window.onload = function () {
         event.preventDefault ();
         var resource = parseInt($(this ).attr('data-seach-type'));
         var songIndex = parseInt($(this ).attr('data-seach-index'));
-        var query = bgPage.songsData.list[songIndex].name;
+        var songCurrent = parseInt($(this ).attr('data-seach-current'));
+        var query = '';
+        if(songCurrent) {
+            query = bgPage.songsPlayData.list[songIndex].name;
+        } else {
+            query = bgPage.songsData.list[songIndex].name;
+        }
         plyalistPlayerSearch(resource, query);
     });
 
@@ -219,7 +273,14 @@ window.onload = function () {
             playlistPlayerTopControl             : $ ( '.playlist-player-top-control-container' ),
             playlistPlayerPlayTop                : $ ( '#playlist-player-play-top' ),
             playlistPlayerPauseTop               : $ ( '#playlist-player-pause-top' ),
-            emailMe                              : $ ( '#email-me' )
+            emailMe                              : $ ( '#email-me' ),
+            playlistPlayerAddSongs               : $ ( '#playlist-player-add-songs' ),
+            playlistPlayerCurrentSongContainer   : $ ( '.playlist-player-current-song-container' ),
+            playlistPlayerCurrentSongItem        : $ ( '.playlist-player-current-song-item' ),
+            playlistPlayerCurrentSongName        : $ ( '.playlist-player-current-song-container .playlist-player-song-search-youtube' ),
+            playlistPlayerCurrentSongSearchVk    : $ ( '.playlist-player-current-song-container .playlist-player-song-search-vk' ),
+            playlistPlayerCurrentSongSearchLfm   : $ ( '.playlist-player-current-song-container .playlist-player-song-search-lastfm' ),
+            playlistPlayerCurrentSongDownload    : $ ( '.playlist-player-current-song-container .playlist-player-download-track' )
         };
     }
 
@@ -236,9 +297,14 @@ window.onload = function () {
     }
 
     // render songs data
-    function render ( data, refresh ) {
+    function render ( data, refresh, isStorageData ) {
         var songsContainer = bgPage.popupElements.resultItem;
         var songsList = bgPage.popupElements.resultList;
+        if(!isStorageData) {
+            bgPage.updateLiveTime = (1000 * 3600 * 2); // next update time +2 hours
+        }
+        bgPage.popupElements.lastUpdateContainerItem.attr('title', 'Автообновление каждые ' + parseInt(bgPage.updateLiveTime / 3600 / 1000) + 'ч.');
+
         if ( refresh ) {
             refreshView ();
             songsContainer.slideUp ( 500, function ( event ) {
@@ -247,33 +313,41 @@ window.onload = function () {
                 songsContainer.mCustomScrollbar ( "update" );
                 //render playlist player play button and progress bar
                 checkPlaylistPlayerState ();
-                renderSongsListHtml ( data, songsContainer );
+                setTimeout(function(){
+                    renderSongsListHtml ( data, songsContainer, true );
+                }, 150);
             } );
         } else {
             songsList.html ( data.html );
             songsContainer.mCustomScrollbar ();
-            renderOnlinePlayer ();
             //render playlist player play button and progress bar
             checkPlaylistPlayerState ();
-            renderSongsListHtml ( data, songsContainer );
+            renderSongsListHtml ( data, songsContainer, !isStorageData );
         }
-
-
     }
 
     // render songs list html
-    function renderSongsListHtml ( data, songsContainer ) {
-        songsContainer.slideDown ( 500, function ( event ) {
-            bgPage.updateSongsListCounter ( data.list.length );
-            bgPage.updateLastSongsListUploadDate ( data.update );
-        } );
+    function renderSongsListHtml ( data, songsContainer, animate ) {
+        if(animate) { // use slide up animation
+            songsContainer.slideDown ( 500, function ( event ) {
+                bgPage.updateSongsListCounter ( data.list.length );
+                bgPage.updateLastSongsListUploadDate ( data.update );
+                $('html' ).css('height', 'auto');
+            } );
+        } else {
+            songsContainer.show ( 0, function ( event ) {
+                bgPage.updateSongsListCounter ( data.list.length );
+                bgPage.updateLastSongsListUploadDate ( data.update );
+                $('html' ).css('height', 'auto');
+            } );
+        }
     }
 
     // check online player state
     function checkPlaylistPlayerState () {
         resetPlayListPlayerPlay ();
         var index = -1;
-        if ( bgPage.isPlayerPlaying ( bgPage.playlistPlayerInstance ) ) {
+        if ( bgPage.isPlayerPlaying ( bgPage.playlistPlayerInstance ) && ( bgPage.songsData.update == bgPage.songsPlayData.update ) ) {
             index = bgPage.currentPlaySongIndex;
         }
 
@@ -286,13 +360,13 @@ window.onload = function () {
                     playListPauseItem.parent().parent().addClass('playlist-player-track-item-current');
                     playListPlayItem.hide ( 0 );
                     playListPauseItem.show ( 0 );
-
+                    scrollToPlaySong();
                 }
-                bgPage.popupElements.playlistPlayerPositionSlider.show ( 0 );
-                bgPage.popupElements.playlistPlayerReplay.show ( 0 );
-                bgPage.popupElements.playlistPlayerTopControl.show ( 0 );
-                bgPage.popupElements.playlistPlayerPauseTop.show ( 0 );
             }
+        }
+
+        if(bgPage.displayPlaylistPlayer) {
+            toggleCurrentSongPlay(true, false);
         }
 
     }
@@ -301,6 +375,7 @@ window.onload = function () {
     function renderOnlinePlayer () {
         // set online player error handler
         bgPage.onlinePlayerInstance.onerror = onlinePlayerErrorPopup;
+        bgPage.onlinePlayerInstance.onstalled = onlinePlayerErrorPopup;
         // render online player play button
         bgPage.checkOnlinePlayerState ();
         // render online player voice switcher
@@ -321,9 +396,21 @@ window.onload = function () {
             }
         } );
 
+        var sliderValue = 0;
+        if(bgPage.displayPlaylistPlayer) {
+                sliderValue = parseInt(bgPage.playlistPlayerInstance.currentTime / bgPage.playlistPlayerInstance.duration * 100);
+            if(isNaN(sliderValue)) {
+                sliderValue = 0;
+            }
+            else if(sliderValue < 0) {
+                sliderValue = 0;
+            } else if(sliderValue > 100) {
+                sliderValue = 100;
+            }
+        }
         // render playlist player position
         bgPage.popupElements.playlistPlayerPositionSliderProgress.slider ( {
-            value       : (0),
+            value       : sliderValue,
             orientation : "horizontal",
             range       : "min",
             animate     : true,
@@ -336,6 +423,7 @@ window.onload = function () {
 
         // set playlist player error handler
         bgPage.playlistPlayerInstance.onerror = playlistPlayerErrorPopup;
+        bgPage.playlistPlayerInstance.onstalled = playlistPlayerErrorPopup;
 
         // update playlist progress bar value
         bgPage.playlistPlayerInstance.ontimeupdate = onPlaylistPlayerTimeUpdate;
@@ -350,21 +438,28 @@ window.onload = function () {
             togglePlaylistPlayerNextPrev(true);
         }
 
+        // playlist player change current track info
+        bgPage.changePlayerPlaylistCurrentSong(bgPage.currentPlaySongIndex, false);
     }
 
     // update songs data list
     function updateSongsDataList ( useStorage, refresh ) {
+        if(!refresh) {
+            renderOnlinePlayer ();
+        }
         if ( useStorage ) {
             var storageData = bgPage.getStorageData ();
             bgPage.songsData = parseStorageTrackList ( storageData.data, storageData.update );
-            bgPage.songsPlayData.list = bgPage.songsData.list;
-            bgPage.songsPlayData.update = bgPage.songsData.update;
-            render ( bgPage.songsData, refresh );
+            if(!bgPage.songsPlayData) {
+                bgPage.songsPlayData.list = bgPage.songsData.list;
+                bgPage.songsPlayData.update = bgPage.songsData.update;
+            }
+            render ( bgPage.songsData, refresh, true );
         } else {
             $.get ( bgPage.radioSiteLink, function ( data ) { // refresh playlist data
                 bgPage.songsData = parseSiteTrackList ( data, (new Date ()).getTime () );
                 bgPage.saveDataToStorage ();
-                render ( bgPage.songsData, refresh );
+                render ( bgPage.songsData, refresh, false );
             }, 'html' );
         }
     }
@@ -372,12 +467,14 @@ window.onload = function () {
     /*** Track parser ***/
 
     // parse playlist content from site
-    function parseSiteTrackList ( data, update ) {
+    function parseSiteTrackList ( data, update, startIndex ) {
         var songsHtml = '';
         var songsList = [];
 
         var songs = $ ( '.tab-content-item', data );
         songs.each ( function ( index ) {
+            var itemIndex = parseInt(startIndex || 0) + index;
+
             var songName = '';
             var songUrl = '';
 
@@ -400,7 +497,7 @@ window.onload = function () {
             if ( songUrl && songName ) {
                 var songInfo = {url : songUrl, name : songName};
                 songsList.push ( songInfo );
-                songsHtml += getSongsListItemHtml ( songInfo, index );
+                songsHtml += getSongsListItemHtml ( songInfo, itemIndex );
             }
         } );
 
@@ -417,13 +514,14 @@ window.onload = function () {
         return {html : songsHtml, list : songsList, update : update};
     }
 
+    // search social media by track name
     function plyalistPlayerSearch ( search, query ) {
         var domain = '';
         var uri = '';
         if(search == 1) { // vk search
             domain = 'http://vk.com';
             uri = '/search?c[q]=' + query + '&c[section]=audio';
-        } else if(search == 2) { // lastfm serach
+        } else if(search == 2) { // lastfm search
             domain = 'http://www.lastfm.ru';
             uri = '/search?q=' + query + '&type=all';
         } else { // youtube search
@@ -439,9 +537,9 @@ window.onload = function () {
     function getSongsListItemHtml ( songInfo, index ) {
         var imgPlayTrack = '<img class="playlist-player-song-play-button" src="../images/playlist-play.png" song-id="' + index + '">';
         var imgStopTrack = '<img class="playlist-player-song-pause-button" src="../images/playlist-pause.png" song-id="' + index + '">';
-        var imgDownloadTrack = imgPlayTrack + imgStopTrack + '<img song-index="' + index + '" song-name="' + songInfo.name + '" song-url="' + songInfo.url + '" class="playlist-player-download-track" src="images/icon_16.png" title="Скачать трек">';
-        var searchButtons = '<div class="playlist-player-song-search"><img src="images/search-vk.png" data-seach-type="1" data-seach-index="' + index + '" class="playlist-player-song-search-vk" title="Найти Вконтакте" alt="Найти Вконтакте"><img src="images/search-lastfm.png" data-seach-type="2" data-seach-index="' + index + '"  class="playlist-player-song-search-lastfm" title="Найти LastFM" alt="Найти LastFM"></div>';
-        var songListItemHtml = '<div class="playlist-player-track-item"><span class="playlist-player-track-item-number">' + imgDownloadTrack + ' ' + (parseInt ( index ) + 1) + '.</span>' + ' <a href="#" class="playlist-player-song-search-youtube" data-seach-type="0" data-seach-index="' + index + '" target="_blank">' + songInfo.name + '</a>' + searchButtons + '</div>';
+        var imgDownloadTrack = imgPlayTrack + imgStopTrack + '<img song-index="' + index + '" song-name="' + songInfo.name + '" data-download-current="0" song-url="' + songInfo.url + '" class="playlist-player-download-track" src="images/icon_16.png" title="Скачать трек">';
+        var searchButtons = '<div class="playlist-player-song-search"><img src="images/search-vk.png" data-seach-type="1" data-seach-current="0" data-seach-index="' + index + '" class="playlist-player-song-search-vk" title="Найти Вконтакте" alt="Найти Вконтакте"><img src="images/search-lastfm.png" data-seach-type="2" data-seach-current="0" data-seach-index="' + index + '"  class="playlist-player-song-search-lastfm" title="Найти LastFM" alt="Найти LastFM"></div>';
+        var songListItemHtml = '<div class="playlist-player-track-item"><span class="playlist-player-track-item-number">' + imgDownloadTrack + ' ' + (parseInt ( index ) + 1) + '.</span>' + ' <a href="#" class="playlist-player-song-search-youtube" data-seach-type="0" data-seach-current="0" data-seach-index="' + index + '" target="_blank">' + songInfo.name + '</a>' + searchButtons + '</div>';
         return songListItemHtml;
     }
 
@@ -462,6 +560,7 @@ window.onload = function () {
     function togglePlaylistPlayerPlay ( playState, index ) {
         var playListPlayItem = $ ( '.playlist-player-song-play-button[song-id=' + index + ']' );
         var playListPauseItem = $ ( '.playlist-player-song-pause-button[song-id=' + index + ']' );
+
         if ( bgPage.currentPlaylistPlayIndex != index ) {
             resetPlayListPlayerPlay ();
             if ( index >= 0 ) {
@@ -470,27 +569,31 @@ window.onload = function () {
         }
 
         if ( index < 0 ) {
-            bgPage.popupElements.playlistPlayerPositionSlider.hide ( 0 );
-            bgPage.popupElements.playlistPlayerReplay.hide ( 0 );
-            bgPage.popupElements.playlistPlayerTopControl.hide ( 0 );
+            toggleCurrentSongPlay(false);
         } else {
-            bgPage.popupElements.playlistPlayerPositionSlider.show ( 0 );
-            bgPage.popupElements.playlistPlayerReplay.show ( 0 );
-            bgPage.popupElements.playlistPlayerTopControl.show ( 0 );
+            toggleCurrentSongPlay(true, true);
         }
 
         if ( playListPlayItem && playListPauseItem ) {
             if ( playState ) {
                 playListPauseItem.hide ( 0 );
                 playListPlayItem.show ( 0 );
-                bgPage.popupElements.playlistPlayerPauseTop.hide(0);
-                bgPage.popupElements.playlistPlayerPlayTop.show(0);
+                setTimeout(function(){
+                    bgPage.popupElements.playlistPlayerPauseTop.fadeOut(200, function() {
+                        bgPage.popupElements.playlistPlayerPlayTop.fadeIn(200);
+                    });
+                }, 70);
+
             } else {
-                playListPauseItem.parent().parent().addClass('playlist-player-track-item-current');
-                playListPlayItem.hide ( 0 );
-                playListPauseItem.show ( 0 );
-                bgPage.popupElements.playlistPlayerPlayTop.hide(0);
-                bgPage.popupElements.playlistPlayerPauseTop.show(0);
+
+                    playListPauseItem.parent().parent().addClass('playlist-player-track-item-current');
+                    playListPlayItem.hide ( 0 );
+                    playListPauseItem.show ( 0 );
+                    setTimeout(function(){
+                        bgPage.popupElements.playlistPlayerPlayTop.fadeOut(200, function(){
+                            bgPage.popupElements.playlistPlayerPauseTop.fadeIn(200);
+                        });
+                    }, 70);
             }
         }
     }
@@ -503,8 +606,8 @@ window.onload = function () {
         if ( playListPlayItems && playListPauseItems ) {
             playListPauseItems.hide ( 0 );
             playListPlayItems.show ( 0 );
-            bgPage.popupElements.playlistPlayerPauseTop.hide(0);
-            bgPage.popupElements.playlistPlayerPlayTop.hide(0);
+            //bgPage.popupElements.playlistPlayerPauseTop.hide(0);
+            //bgPage.popupElements.playlistPlayerPlayTop.hide(0);
         }
     }
 
@@ -553,17 +656,31 @@ window.onload = function () {
         }
     }
 
+    // scroll to start play song
+    function scrollToPlaySong() {
+        if(bgPage.displayPlaylistPlayer) {
+            setTimeout(function() {
+                if($(".playlist-player-track-item-current")) {
+                    bgPage.popupElements.resultItem.mCustomScrollbar("scrollTo", ".playlist-player-track-item-current", {scrollInertia: 750});
+                }
+            }, 100);
+        }
+    }
+
     // online player error handler popup
     function onlinePlayerErrorPopup() {
-        bgPage.onlinePlayerInstance.pause ();
+        bgPage.pausePlayer(bgPage.onlinePlayerInstance);
         bgPage.popupElements.onlinePlayerPause.hide ( 0 );
         bgPage.popupElements.onlinePlayerPlay.show ( 0 );
     }
 
     // playlist player error handler popup
     function playlistPlayerErrorPopup() {
-        bgPage.playlistPlayerInstance.pause ();
+        bgPage.pausePlayer (bgPage.playlistPlayerInstance);
         resetPlayListPlayerPlay();
+        bgPage.popupElements.playlistPlayerPauseTop.fadeOut ( 200, function() {
+            bgPage.popupElements.playlistPlayerPlayTop.fadeIn ( 200 );
+        } );
     }
 
     // playlist player time update handler popup
@@ -580,6 +697,70 @@ window.onload = function () {
         } else {
             bgPage.popupElements.playlistPlayerPrev.fadeOut(500);
             bgPage.popupElements.playlistPlayerNext.fadeOut(500);
+        }
+    }
+
+    // toggle playlist prev and next buttons html
+    function toggleCurrentSongPlay ( showSongInfo, animate ) {
+        if ( showSongInfo ) {
+            if(animate) {
+                bgPage.popupElements.playlistPlayerCurrentSongContainer.slideDown(300, function() {
+                    setTimeout(function(){
+                        togglePlaylistPlayerInterface ( true );
+                    }, 50);
+                });
+            } else {
+                bgPage.popupElements.playlistPlayerCurrentSongContainer.show(0);
+                togglePlaylistPlayerInterface ( true );
+            }
+            bgPage.displayPlaylistPlayer = true;
+        } else {
+            togglePlaylistPlayerInterface ( false );
+            setTimeout(function(){
+                bgPage.popupElements.playlistPlayerCurrentSongContainer.slideUp(300);
+            }, 50);
+            bgPage.displayPlaylistPlayer = false;
+        }
+    }
+
+    /**
+     * toggle playlist current song top interface
+     */
+    function togglePlaylistPlayerInterface ( showSongInfo ) {
+        if ( showSongInfo ) {
+            bgPage.popupElements.playlistPlayerPositionSlider.show ( 0 );
+            bgPage.popupElements.playlistPlayerReplay.show ( 0 );
+            bgPage.popupElements.playlistPlayerTopControl.show ( 0 , function() {
+                if(bgPage.isPlayerPlaying(bgPage.playlistPlayerInstance)) {
+                    bgPage.popupElements.playlistPlayerPlayTop.fadeOut ( 200, function() {
+                        bgPage.popupElements.playlistPlayerPauseTop.fadeIn ( 200 );
+                    } );
+                } else {
+                    bgPage.popupElements.playlistPlayerPauseTop.fadeOut ( 200, function() {
+                        bgPage.popupElements.playlistPlayerPlayTop.fadeIn ( 200 );
+                    } );
+                }
+            } );
+            bgPage.popupElements.playlistPlayerCurrentSongItem.show ( 0 );
+            bgPage.popupElements.playlistPlayerPrev.show ( 0 );
+            bgPage.popupElements.playlistPlayerNext.show ( 0 );
+        } else {
+            bgPage.popupElements.playlistPlayerPositionSlider.hide ( 0 );
+            bgPage.popupElements.playlistPlayerTopControl.hide ( 0, function() {
+                if(bgPage.isPlayerPlaying(bgPage.playlistPlayerInstance)) {
+                    bgPage.popupElements.playlistPlayerPauseTop.fadeOut ( 200, function() {
+                        bgPage.popupElements.playlistPlayerPlayTop.fadeIn ( 200 );
+                    } );
+                } else {
+                    bgPage.popupElements.playlistPlayerPlayTop.fadeOut ( 200, function() {
+                        bgPage.popupElements.playlistPlayerPauseTop.fadeIn ( 200 );
+                    } );
+                }
+            } );
+            bgPage.popupElements.playlistPlayerReplay.hide ( 0 );
+            bgPage.popupElements.playlistPlayerCurrentSongItem.hide ( 0 );
+            bgPage.popupElements.playlistPlayerPrev.hide ( 0 );
+            bgPage.popupElements.playlistPlayerNext.hide ( 0 );
         }
     }
 
