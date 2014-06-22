@@ -8,7 +8,7 @@ window.onload = function () {
         event.preventDefault ();
         var index = parseInt($ ( this ).attr ( 'song-index' ));
         var usePlayPlaylist = parseInt($ ( this ).attr ( 'data-download-current' )) ? true : false;
-        if ( index ) {
+        if ( index >= 0 ) {
             bgPage.updateTotalDownloads ( (++bgPage.totalDownloads) );
             bgPage.chromeDownloadQueryAdd ( index, usePlayPlaylist ); // add song to download query
         }

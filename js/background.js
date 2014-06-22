@@ -24,7 +24,18 @@ var playlistAddSongsCount = 30;
 
 // download files to radio24 folder and overwrite if exist
 chrome.downloads.onDeterminingFilename.addListener ( function ( item, suggest ) {
-    suggest ( {filename : 'radio24/' + item.filename, conflict_action : 'overwrite', conflictAction : 'overwrite'} );
+    if(item.url.indexOf(radioSiteLink)+1) { // if file source is http://radio24.ua
+        var downloadParams = {filename: 'radio24/', conflict_action : "overwrite", conflictAction : "overwrite"};
+        try {
+            var fileName = downloadQueryList[downloadIndex].name.trim().replace(/\r?\n|\r/gmi, '' ).replace(/[^A-zA-я\s-_]/gmi, ' ' ).replace(/\s+/g, ' ') +
+                '.' + item.filename.replace(/^.*\./,'');
+            downloadParams.filename +=  fileName;
+            suggest ( downloadParams );
+        } catch (error) {
+            downloadParams.filename += item.filename;
+            suggest ( downloadParams );
+        }
+    }
 } );
 
 // update budge counter
@@ -78,11 +89,11 @@ chrome.downloads.onChanged.addListener ( function ( downloadDelta ) {
 function chromeDownloadQueryAdd ( index, usePlayPlaylist ) {
     if(usePlayPlaylist) {
         if ( songsPlayData.list.length && songsPlayData.list[index] ) {
-            downloadQueryList.push ( songsPlayData.list[index].url );
+            downloadQueryList.push ( songsPlayData.list[index] );
         }
     } else {
         if ( songsData.list.length && songsData.list[index] ) {
-            downloadQueryList.push ( songsData.list[index].url );
+            downloadQueryList.push ( songsData.list[index] );
         }
     }
 
@@ -94,7 +105,7 @@ function chromeDownloadQueryAdd ( index, usePlayPlaylist ) {
 
 // start browser download process
 function startDownloadProccess ( index ) {
-    var downloadParams = {url : downloadQueryList[index], conflictAction : "overwrite"};
+    var downloadParams = {url : downloadQueryList[index].url, conflictAction : "overwrite"};
     toggleTotalDownloadAllSongs ( false );
     chrome.downloads.download ( downloadParams, function ( downloadId ) {
         chromeCurrentDownloadId = downloadId;
@@ -198,7 +209,7 @@ function getCurrentDateTime ( timestamp ) {
     var date = new Date ( parseInt ( timestamp ) );
     var dateData = {
         Y             : date.getFullYear (),
-        m             : date.getMonth (),
+        m             : parseInt(date.getMonth ()) + 1,
         d             : date.getDate (),
         h             : date.getHours (),
         i             : date.getMinutes (),
